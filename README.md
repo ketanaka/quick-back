@@ -9,15 +9,19 @@ You can back to the place that you marked anytime.
 
 Clone this repository to your packages directory.
 
-    $ cd ~/.emacs.d/elisp
-    $ git clone https://github.com/ketanaka/quick-back.git
+```
+$ cd ~/.emacs.d/elisp
+$ git clone https://github.com/ketanaka/quick-back.git
+```
 
 Add the following in your `init.el`.
 
-    (add-to-list 'load-path "~/.emacs.d/elisp/quick-back/")
-    (require 'quick-back)
-    (global-set-key (kbd "C-M-'") 'quick-back-mark)     ; customize as you like
-    (global-set-key (kbd "C-'") 'quick-back-jump)       ; customize as you like
+```el
+(add-to-list 'load-path "~/.emacs.d/elisp/quick-back/")
+(require 'quick-back)
+(global-set-key (kbd "C-M-'") 'quick-back-mark)     ; customize as you like
+(global-set-key (kbd "C-'") 'quick-back-jump)       ; customize as you like
+```
 
 # Usage
 
