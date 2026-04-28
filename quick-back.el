@@ -4,7 +4,7 @@
 
 ;; Author: Keisuke Tanaka <lego.sw@gmail.com>
 ;; Keywords: convenience
-;; URL: http://github.com/ketanaka/quick-back
+;; URL: https://github.com/ketanaka/quick-back
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
