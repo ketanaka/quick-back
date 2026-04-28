@@ -38,30 +38,24 @@
 Invoking this command at the marked position jumps back to the
 position from which the previous jump was made (round-trip jump)."
   (interactive)
-  (let ((dbuf (marker-buffer quick-back-dest-marker))
-        (sbuf (marker-buffer quick-back-src-marker)))
+  (let ((dbuf (marker-buffer quick-back-dest-marker)))
     (cond ((null dbuf)
            (user-error "QB: No mark set"))
           ((equal quick-back-dest-marker (point-marker))
-           (when sbuf
-             (quick-back--transition sbuf
-                                     quick-back-src-marker
-                                     (equal sbuf dbuf)
-                                     "QB: Returned")))
+           (when (marker-buffer quick-back-src-marker)
+             (quick-back--transition quick-back-src-marker "QB: Returned")))
           (t
            (setq quick-back-src-marker (point-marker))
-           (quick-back--transition dbuf
-                                   quick-back-dest-marker
-                                   t
-                                   "QB: Jumped")))))
+           (quick-back--transition quick-back-dest-marker "QB: Jumped")))))
 
-(defun quick-back--transition (buf loc rec-flag msg)
-  "Switch to BUF and move point to LOC.
-Call `recenter' when REC-FLAG is non-nil, then display MSG in the
-echo area."
-  (switch-to-buffer buf)
-  (goto-char loc)
-  (when rec-flag (recenter))
+(defun quick-back--transition (marker msg)
+  "Switch to MARKER's buffer and move point to its position.
+Call `recenter' only when the destination is not visible in the
+selected window, then display MSG in the echo area."
+  (switch-to-buffer (marker-buffer marker))
+  (goto-char marker)
+  (unless (pos-visible-in-window-p)
+    (recenter))
   (message msg))
 
 (provide 'quick-back)
