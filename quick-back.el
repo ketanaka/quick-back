@@ -1,4 +1,4 @@
-;;; quick-back.el --- simply mark and jump for emacs.
+;;; quick-back.el --- simply mark and jump for emacs. -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Keisuke Tanaka
 
@@ -22,39 +22,46 @@
 ;;; Code:
 
 (defvar quick-back-dest-marker (make-marker)
-  "Destination marker to jump.")
+  "Marker remembered as the jump destination.")
 (defvar quick-back-src-marker (make-marker)
-  "Source marker of jump.")
+  "Marker remembered as the return point for the round-trip jump.")
 
 (defun quick-back-mark ()
+  "Mark the current point as the destination for `quick-back-jump'."
   (interactive)
   (setq quick-back-dest-marker (point-marker))
   (setq quick-back-src-marker (make-marker))
   (message "QB: Marked"))
 
 (defun quick-back-jump ()
+  "Jump to the position marked by `quick-back-mark'.
+Invoking this command at the marked position jumps back to the
+position from which the previous jump was made (round-trip jump)."
   (interactive)
   (let ((dbuf (marker-buffer quick-back-dest-marker))
         (sbuf (marker-buffer quick-back-src-marker)))
     (cond ((null dbuf)
-           (error "QB: Marked buffer is nil"))
+           (user-error "QB: No mark set"))
           ((equal quick-back-dest-marker (point-marker))
-           (if (not (null sbuf))
-               (quick-back-transition sbuf
-                                      quick-back-src-marker
-                                      (equal sbuf dbuf)
-                                      "QB: Returned")))
+           (when sbuf
+             (quick-back--transition sbuf
+                                     quick-back-src-marker
+                                     (equal sbuf dbuf)
+                                     "QB: Returned")))
           (t
            (setq quick-back-src-marker (point-marker))
-           (quick-back-transition dbuf
-                                  quick-back-dest-marker
-                                  t
-                                  "QB: Jumped")))))
+           (quick-back--transition dbuf
+                                   quick-back-dest-marker
+                                   t
+                                   "QB: Jumped")))))
 
-(defun quick-back-transition (buf loc rec-flag msg)
+(defun quick-back--transition (buf loc rec-flag msg)
+  "Switch to BUF and move point to LOC.
+Call `recenter' when REC-FLAG is non-nil, then display MSG in the
+echo area."
   (switch-to-buffer buf)
   (goto-char loc)
-  (if rec-flag (recenter))
+  (when rec-flag (recenter))
   (message msg))
 
 (provide 'quick-back)
